@@ -1,0 +1,6 @@
+main: ru.twistofthemyth.graves.Main
+name: Graves
+version: 0.01
+api-version: 1.17
+author: ha0s
+depend: [WorldGuard]
