@@ -1,0 +1,6 @@
+version: 0
+maxDisplacementV: 100
+maxDisplacementH: 100
+glowingSign: true
+signColor: 'MAGENTA'
+debugMode: true
