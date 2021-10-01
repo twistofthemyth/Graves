@@ -31,10 +31,12 @@ import static ru.twistofthemyth.graves.Utils.getDay;
 
 public class Grave {
     private Logger log = GravesPlugin.getInstance().log;
-    private FileConfiguration config = GravesPlugin.getInstance().getConfig();
-    private final int maxDisplacementV = config.getInt("maxDisplacementV");
-    private final int maxDisplacementH = config.getInt("maxDisplacementH");
-    private final boolean debugMode = config.getBoolean("debugMode");
+
+    private static MessageManager msg = GravesPlugin.getInstance().msgManager();
+    private static FileConfiguration config = GravesPlugin.getInstance().getConfig();
+    private static final int maxDisplacementV = config.getInt("maxDisplacementV");
+    private static final int maxDisplacementH = config.getInt("maxDisplacementH");
+    private static final boolean debugMode = config.getBoolean("debugMode");
 
     private final Player player;
     private Block plateBlock;
@@ -45,24 +47,22 @@ public class Grave {
     public Grave(PlayerDeathEvent event) throws GravePlacementException {
         this.player = event.getEntity();
 
-        if(event.getKeepInventory()){
-            player.sendRawMessage("Ваши вещи возвращены");
-            throw new GravePlacementException("Игрок имеет KeepInventory");
+        if (event.getKeepInventory()) {
+            player.sendMessage(msg.get("return_items"));
+            throw new GravePlacementException("Player has KeepInventory");
         }
         Location graveLocation;
         try {
             graveLocation = shiftGravePlacement(player.getLocation());
         } catch (GravePlacementException exc) {
-            player.sendRawMessage("Невозможно установить могилу, вещи возвращены");
+            player.sendMessage(msg.get("return_items"));
             throw exc;
         }
         Location chestLocation = getChestLocation(graveLocation);
         Location signLocation = getSignLocation(graveLocation);
 
         if (debugMode) {
-            log.info(String.format("Место сундука X:%s Y:%s Z:%s", chestLocation.getX(), chestLocation.getY(), chestLocation.getZ()));
-            log.info(String.format("Место знака X:%s Y:%s Z:%s", signLocation.getX(), signLocation.getY(), signLocation.getZ()));
-            log.info(String.format("Место плиты X:%s Y:%s Z:%s", graveLocation.getX(), graveLocation.getY(), graveLocation.getZ()));
+            log.info(String.format("Death chest placed in X:%s Y:%s Z:%s", (long) chestLocation.getX(), (long) chestLocation.getY(), (long) chestLocation.getZ()));
         }
 
         //Plate
@@ -76,7 +76,7 @@ public class Grave {
                 if (itemStack != null) chest.getBlockInventory().addItem(itemStack);
             });
         } else {
-            log.warning("Невозможно установить сундук");
+            log.warning("Unable to set death chest");
         }
         //Sign
         signBlock = signLocation.getBlock();
@@ -85,18 +85,18 @@ public class Grave {
             sign.setGlowingText(config.getBoolean("glowingSign"));
             sign.setColor(Utils.parseColor(config.getString("signColor")));
             sign.line(0, player.name());
-            sign.line(2, Component.text("Дата смерти:"));
-            sign.line(3, Component.text(getDay(player.getWorld().getFullTime())));
+            sign.line(2, Component.text(msg.get("death_time")));
+            sign.line(3, Component.text(getDay(player.getWorld().getFullTime()) + "D"));
             sign.update();
         } else {
-            log.warning("Невозможно установить знак");
+            log.warning("Unable to set sign");
         }
         if (signBlock.getBlockData() instanceof WallSign dir) {
             dir.setFacing(BlockFace.NORTH);
         } else {
             log.warning("Sign is not attachable");
         }
-        player.sendRawMessage(String.format("Место плиты X:%s Y:%s Z:%s", graveLocation.getX(), graveLocation.getY(), graveLocation.getZ()));
+        player.sendMessage(msg.get("grave_location") + String.format(" [X:%s Y:%s Z:%s]", (long) graveLocation.getX(), (long) graveLocation.getY(), (long) graveLocation.getZ()));
     }
 
     @Nullable
@@ -170,7 +170,7 @@ public class Grave {
                 loc = graveLocation.add(0, 0, i);
             }
         }
-        throw new GravePlacementException("Невозможно установить могилу");
+        throw new GravePlacementException("Unable to install the grave");
     }
 
     @Nullable

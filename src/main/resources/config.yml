@@ -4,3 +4,4 @@ maxDisplacementH: 100
 glowingSign: true
 signColor: 'MAGENTA'
 debugMode: true
+locale: ru_RU

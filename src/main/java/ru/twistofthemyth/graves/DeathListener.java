@@ -12,7 +12,7 @@ import java.util.logging.Logger;
 
 public class DeathListener implements Listener {
 
-    private Logger log = GravesPlugin.getInstance().log;
+    private final Logger log = GravesPlugin.getInstance().log;
 
     @EventHandler
     public void onPlayerDeath(PlayerDeathEvent event) {
@@ -23,7 +23,7 @@ public class DeathListener implements Listener {
         try {
             new Grave(event);
         } catch (GravePlacementException exc) {
-            log.info("Возвращение вещей игроку " + player.getName());
+            log.info("Getting items back to " + player.getName());
             keepInventory = true;
         } catch (Exception exc) {
             log.warning(exc.getMessage() + "\n" + Arrays.toString(exc.getStackTrace()));
@@ -39,10 +39,10 @@ public class DeathListener implements Listener {
 
     @EventHandler
     public void onPlayerRespawn(PlayerRespawnEvent event) {
-        ItemSaver is = GravesPlugin.getInstance().getItemSaver();
+        ItemSaver itemSaver = GravesPlugin.getInstance().getItemSaver();
         String playerName = event.getPlayer().getName();
-        if (is.isExist(playerName)) {
-            ItemStack[] items = is.load(playerName);
+        if (itemSaver.isExist(playerName)) {
+            ItemStack[] items = itemSaver.load(playerName);
             event.getPlayer().getInventory().setContents(items);
         }
     }
