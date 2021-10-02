@@ -1,6 +1,6 @@
 main: ru.twistofthemyth.graves.GravesPlugin
 name: Graves
-version: 0.02
+version: 0.03
 api-version: 1.17
 author: ha0s
 depend: [WorldGuard]
