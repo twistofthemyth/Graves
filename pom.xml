@@ -6,7 +6,7 @@
 
     <groupId>ru.twistofthemyth</groupId>
     <artifactId>Graves</artifactId>
-    <version>0.02</version>
+    <version>0.03</version>
     <build>
         <plugins>
             <plugin>

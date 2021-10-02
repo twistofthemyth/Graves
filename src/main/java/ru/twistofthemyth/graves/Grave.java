@@ -103,8 +103,10 @@ public class Grave {
     private Location shiftGravePlacement(final Location graveLocation) throws GravePlacementException {
         World world = graveLocation.getWorld();
         double x = graveLocation.getX();
-        double y = graveLocation.getY();
         double z = graveLocation.getZ();
+        if (graveLocation.getY() < 1) {
+            graveLocation.setY(100);
+        }
 
         for (int i = 0; i <= maxDisplacementH; i += 50) {
             Location loc;
@@ -174,31 +176,26 @@ public class Grave {
     }
 
     @Nullable
-    private Double getValidHeight(final Location graveLocation) {
-        double x = graveLocation.getX();
-        double y = graveLocation.getY();
-        double z = graveLocation.getZ();
-        Location loc = graveLocation;
-        if (isFloat(loc)) {
-            RayTraceResult result = graveLocation.getWorld().rayTraceBlocks(graveLocation, new Vector(0, -maxDisplacementV, 0), maxDisplacementV, FluidCollisionMode.NEVER);
+    private Double getValidHeight(final Location location) {
+        Double validY = null;
+        if (isFloat(location)) {
+            RayTraceResult result = location.getWorld().rayTraceBlocks(location, new Vector(0, -maxDisplacementV, 0), maxDisplacementV, FluidCollisionMode.NEVER);
             if (result != null) {
-                loc.set(x, result.getHitPosition().getY(), z);
                 log.info(result.getHitBlock().toString());
-            } else {
-                return null;
+                validY = result.getHitPosition().getY();
             }
-        } else if (isUnderground(loc)) {
-            for (int i = 0; i < maxDisplacementV; i++) {
-                if (y + i > 250) {
-                    return null;
-                }
-                loc.set(x, y + i, z);
-                if (!isUnderground(loc)) {
+        } else if (isUnderground(location)) {
+            for (int i = 1; i < maxDisplacementV; i++) {
+                if (location.getY() + i > 250) {
                     break;
+                }
+                if (!isUnderground(location.add(0, i, 0))) {
+                    validY = location.getY() + i;
                 }
             }
         }
-        return loc.getY();
+        log.info("VALID Y: " + validY);
+        return validY;
     }
 
     private Location getChestLocation(final Location graveLocation) {
