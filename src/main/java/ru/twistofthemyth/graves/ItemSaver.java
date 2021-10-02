@@ -8,10 +8,12 @@ import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.logging.Logger;
 
 public class ItemSaver {
-    private String dataPath = GravesPlugin.getInstance().getDataFolder() + "/keepInventory.dat";
-    private Map<String, ItemStack[]> data;
+    private final String dataPath = GravesPlugin.getInstance().getDataFolder() + "/keepInventory.dat";
+    private final Map<String, ItemStack[]> data;
+    private final Logger log = GravesPlugin.getInstance().getLog();
 
     public ItemSaver() {
         if (!Files.exists(Path.of(dataPath))) {
@@ -33,12 +35,12 @@ public class ItemSaver {
         try {
             Files.delete(Path.of(dataPath));
         } catch (IOException e) {
-            GravesPlugin.getInstance().log.warning(e.getMessage() + "\n" + Arrays.toString(e.getStackTrace()));
+            log.warning(e.getMessage() + "\n" + Arrays.toString(e.getStackTrace()));
         }
         try (ObjectOutputStream outputStream = new ObjectOutputStream(new FileOutputStream(dataPath))) {
             outputStream.writeObject(data);
         } catch (IOException e) {
-            GravesPlugin.getInstance().log.warning(e.getMessage() + "\n" + Arrays.toString(e.getStackTrace()));
+            log.warning(e.getMessage() + "\n" + Arrays.toString(e.getStackTrace()));
         }
     }
 
@@ -46,7 +48,7 @@ public class ItemSaver {
         try (ObjectInputStream inputStream = new ObjectInputStream(new FileInputStream(dataPath))) {
             return (HashMap<String, ItemStack[]>) inputStream.readObject();
         } catch (IOException | ClassNotFoundException e) {
-            GravesPlugin.getInstance().log.warning(e.getMessage() + "\n" + Arrays.toString(e.getStackTrace()));
+            log.warning(e.getMessage() + "\n" + Arrays.toString(e.getStackTrace()));
             return null;
         }
     }

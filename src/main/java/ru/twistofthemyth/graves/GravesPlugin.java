@@ -8,10 +8,11 @@ import java.util.logging.Logger;
 
 public class GravesPlugin extends JavaPlugin {
 
-    final Logger log = Logger.getLogger("Graves");
+    private final Logger log = Logger.getLogger("Graves");
     private static GravesPlugin instance;
     private ItemSaver itemSaver;
     private MessageManager msgManager;
+    private FileConfiguration config;
 
     public static GravesPlugin getInstance() {
         return instance;
@@ -21,7 +22,7 @@ public class GravesPlugin extends JavaPlugin {
     public void onEnable() {
         log.info("Starting \"Graves\" plugin");
         saveDefaultConfig();
-        FileConfiguration config = getConfig();
+        config = getConfig();
         instance = this;
         getServer().getPluginManager().registerEvents(new DeathListener(), this);
         itemSaver = new ItemSaver();
@@ -38,5 +39,9 @@ public class GravesPlugin extends JavaPlugin {
 
     public @NotNull MessageManager msgManager() {
         return msgManager;
+    }
+
+    public @NotNull Logger getLog() {
+        return log;
     }
 }

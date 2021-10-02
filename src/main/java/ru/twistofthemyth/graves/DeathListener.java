@@ -12,7 +12,7 @@ import java.util.logging.Logger;
 
 public class DeathListener implements Listener {
 
-    private final Logger log = GravesPlugin.getInstance().log;
+    private final Logger log = GravesPlugin.getInstance().getLog();
 
     @EventHandler
     public void onPlayerDeath(PlayerDeathEvent event) {
@@ -21,7 +21,7 @@ public class DeathListener implements Listener {
         ItemStack[] items = player.getInventory().getContents();
         boolean keepInventory = event.getKeepInventory();
         try {
-            new Grave(event);
+            new Grave(player).place();
         } catch (GravePlacementException exc) {
             log.info("Getting items back to " + player.getName());
             keepInventory = true;
