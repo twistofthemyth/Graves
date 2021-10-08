@@ -10,11 +10,16 @@ import org.bukkit.block.Sign;
 import org.bukkit.block.data.type.WallSign;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.RayTraceResult;
 import org.bukkit.util.Vector;
 
 import javax.annotation.Nullable;
+import java.util.List;
+import java.util.Objects;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static ru.twistofthemyth.graves.Utils.getDay;
 
@@ -60,13 +65,24 @@ public class Grave {
             throw exc;
         }
 
+        List<ItemStack> items = Stream.of(player.getInventory().getContents()).filter(Objects::nonNull).collect(Collectors.toList());
+
+        items.add(new ItemStack(rightChest.getType()));
+        items.add(new ItemStack(leftChest.getType()));
+        items.add(new ItemStack(leftPlate.getType()));
+        items.add(new ItemStack(rightPlate.getType()));
+        items.add(new ItemStack(firstHeadstone.getType()));
+        items.add(new ItemStack(secondHeadstone.getType()));
+
         //place chests
         leftChest.setType(Material.CHEST);
         rightChest.setType(Material.CHEST);
         Utils.rotateBlock(leftChest, BlockFace.WEST);
         Utils.rotateBlock(rightChest, BlockFace.WEST);
         Utils.createDoubleChest(leftChest, rightChest);
-        Utils.fillDoubleChest(leftChest, rightChest, player.getInventory().getContents());
+
+        Utils.fillDoubleChest(leftChest, rightChest, items.toArray(new ItemStack[54]));
+
         //place plates
         leftPlate.setType(Material.MOSSY_COBBLESTONE_SLAB);
         rightPlate.setType(Material.MOSSY_COBBLESTONE_SLAB);
@@ -98,7 +114,6 @@ public class Grave {
     }
 
     private void setGrave(int x, int y, int z) {
-        log.info(String.format("Setting grave to X:%s Y:%s Z:%s", x, y, z));
         this.x = x;
         this.y = y;
         this.z = z;
@@ -109,7 +124,6 @@ public class Grave {
         firstHeadstone = w.getBlockAt(x, y, z);
         secondHeadstone = w.getBlockAt(x, y + 1, z);
         signBlock = w.getBlockAt(x, y + 1, z - 1);
-        logInfo();
     }
 
     private void logInfo() {
@@ -125,7 +139,7 @@ public class Grave {
     }
 
     private boolean checkPlace() {
-        if (y < 1) {
+        if (y < 5) {
             setGrave(x, 100, z);
             return false;
         }
@@ -140,7 +154,7 @@ public class Grave {
     }
 
     private void findPlace() throws GravePlacementException {
-        for (int i = 0; i <= maxDisplacementH; i += 50) {
+        for (int i = 0; i <= maxDisplacementH; i += config.getInt("placePrecision")) {
             //Base check
             if (i == 0) {
                 if (checkPlace()) return;
@@ -168,7 +182,6 @@ public class Grave {
         if (isFloat()) {
             RayTraceResult result = w.rayTraceBlocks(secondHeadstone.getLocation(), new Vector(0, -maxDisplacementV, 0), maxDisplacementV, FluidCollisionMode.NEVER);
             if (result != null) {
-                log.info(result.getHitBlock().toString());
                 validY = (int) result.getHitPosition().getY();
             }
         } else if (!Utils.isUnderground(leftChest)) {
@@ -185,7 +198,6 @@ public class Grave {
         } else {
             validY = 0;
         }
-        log.info("VALID Y : " + validY + "\nDEATH Y: " + y);
         return validY == null ? null : (validY - y);
     }
 
@@ -194,7 +206,7 @@ public class Grave {
     }
 
     private boolean isNotProtected() {
-
-        return !Utils.isProtected(player, leftChest, rightChest, leftChest, rightChest, firstHeadstone, secondHeadstone, signBlock);
+        return !(Utils.isProtected(player, leftChest, rightChest, leftChest, rightChest, firstHeadstone, secondHeadstone, signBlock) ||
+                Utils.isBlacklisted(leftChest, rightChest, leftChest, rightChest, firstHeadstone, secondHeadstone, signBlock));
     }
 }

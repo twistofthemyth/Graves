@@ -1,6 +1,7 @@
 version: 0
 maxDisplacementV: 100
 maxDisplacementH: 500
+placePrecision: 25
 glowingSign: true
 signColor: 'GREY'
 debugMode: false

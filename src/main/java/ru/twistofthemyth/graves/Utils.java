@@ -93,6 +93,17 @@ public class Utils {
         return isFloat;
     }
 
+    public static boolean isBlacklisted(Block... blocks) {
+        boolean isBlacklisted = false;
+        for (Block block : blocks) {
+            Material material = block.getBlockData().getMaterial();
+            if (material.equals(Material.CHEST) || material.equals(Material.TRAPPED_CHEST) || material.equals(Material.BEDROCK)) {
+                isBlacklisted = true;
+            }
+        }
+        return isBlacklisted;
+    }
+
     public static boolean isUnderground(Block... blocks) {
         boolean isUnderground = true;
         for (Block block : blocks) {
