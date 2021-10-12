@@ -10,7 +10,7 @@ public class GravesPlugin extends JavaPlugin {
 
     private final Logger log = Logger.getLogger("Graves");
     private static GravesPlugin instance;
-    private ItemSaver itemSaver;
+    private Deathpoints dp;
     private MessageManager msgManager;
     private FileConfiguration config;
 
@@ -25,16 +25,16 @@ public class GravesPlugin extends JavaPlugin {
         config = getConfig();
         instance = this;
         getServer().getPluginManager().registerEvents(new DeathListener(), this);
-        itemSaver = new ItemSaver();
+        dp = DataManager.loadDeathpoints();
         msgManager = new MessageManager(config.getString("locale"));
     }
 
     public void onDisable() {
-        itemSaver.saveData();
+        DataManager.saveDeathpoints(dp);
     }
 
-    public @NotNull ItemSaver getItemSaver() {
-        return itemSaver;
+    public @NotNull Deathpoints getDeathpoints() {
+        return dp;
     }
 
     public @NotNull MessageManager msgManager() {

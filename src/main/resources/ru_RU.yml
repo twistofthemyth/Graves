@@ -1,3 +1,4 @@
 return_items: 'Ваши вещи возвращены'
 grave_location: 'Местонахождение вашей могилы'
 death_time: 'Дата смерти'
+death_point: 'Точка смерти'
