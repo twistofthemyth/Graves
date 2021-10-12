@@ -1,6 +1,7 @@
 package ru.twistofthemyth.graves;
 
 import net.kyori.adventure.text.Component;
+import org.bukkit.ChatColor;
 import org.bukkit.FluidCollisionMode;
 import org.bukkit.Material;
 import org.bukkit.World;
@@ -57,7 +58,7 @@ public class Grave {
         setGrave(x, y, z);
     }
 
-    public void place() throws GravePlacementException {
+    public Vector place() throws GravePlacementException {
         findPlace();
         List<ItemStack> items = Stream.of(player.getInventory().getContents()).filter(Objects::nonNull).collect(Collectors.toList());
 
@@ -100,7 +101,8 @@ public class Grave {
         } else {
             log.warning("Unable to set sign");
         }
-        player.sendMessage(msg.get("grave_location") + String.format(" X:%s Y:%s Z:%s", x, y, z));
+        player.sendMessage(msg.get("grave_location") + ChatColor.GOLD + String.format(" X:%s Y:%s Z:%s", x, y, z));
+        return new Vector(x, y, z);
     }
 
     private void moveGrave(int addX, int addY, int addZ) {

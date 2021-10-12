@@ -27,6 +27,6 @@ public class MessageManager {
     @NotNull
     public String get(String name) {
         String message = locale.getString(name);
-        return message == null ? "" : ChatColor.AQUA + "[Graves] " + message;
+        return message == null ? "" : ChatColor.DARK_AQUA + "[Graves] " + ChatColor.AQUA + message;
     }
 }

@@ -3,7 +3,9 @@ package ru.twistofthemyth.graves;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
+import ru.twistofthemyth.graves.command.GravesCommand;
 
+import java.util.Objects;
 import java.util.logging.Logger;
 
 public class GravesPlugin extends JavaPlugin {
@@ -25,7 +27,11 @@ public class GravesPlugin extends JavaPlugin {
         config = getConfig();
         instance = this;
         getServer().getPluginManager().registerEvents(new DeathListener(), this);
+        Objects.requireNonNull(this.getCommand("graves")).setExecutor(new GravesCommand());
         dp = DataManager.loadDeathpoints();
+        if(dp == null){
+            log.warning("NULL DEATHPOINTS");
+        }
         msgManager = new MessageManager(config.getString("locale"));
     }
 
@@ -33,7 +39,7 @@ public class GravesPlugin extends JavaPlugin {
         DataManager.saveDeathpoints(dp);
     }
 
-    public @NotNull Deathpoints getDeathpoints() {
+    public Deathpoints getDeathpoints() {
         return dp;
     }
 

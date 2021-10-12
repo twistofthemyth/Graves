@@ -7,6 +7,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.util.Vector;
 
 import java.util.Arrays;
 import java.util.Objects;
@@ -15,18 +16,18 @@ import java.util.logging.Logger;
 public class DeathListener implements Listener {
 
     private final Logger log = GravesPlugin.getInstance().getLog();
-    private final Deathpoints dp = GravesPlugin.getInstance().getDeathpoints();
 
     @EventHandler
     public void onPlayerDeath(PlayerDeathEvent event) {
+        Deathpoints dp = GravesPlugin.getInstance().getDeathpoints();
         event.setCancelled(true);
         Player player = event.getEntity();
         ItemStack[] items = player.getInventory().getContents();
+        Vector gravePosition = null;
         boolean keepInventory = TriState.TRUE.equals(player.permissionValue("graves.keepinventory"));
         try {
             if (!keepInventory) {
-                log.info("placing grave");
-                new Grave(player).place();
+                gravePosition = new Grave(player).place();
             } else {
                 player.sendMessage(GravesPlugin.getInstance().msgManager().get("return_items"));
             }
@@ -39,16 +40,20 @@ public class DeathListener implements Listener {
             event.getEntity().getInventory().clear();
             event.getDrops().clear();
             event.setCancelled(false);
-            dp.add(player.getName(),
-                    player.getLocation().getBlockX(),
-                    player.getLocation().getBlockY(),
-                    player.getLocation().getBlockZ(),
-                    (keepInventory ? items : null));
+            if (null != gravePosition) {
+                dp.add(player.getName(),
+                        (int) gravePosition.getX(),
+                        (int) gravePosition.getY(),
+                        (int) gravePosition.getZ(),
+                        (keepInventory ? items : null));
+            }
+
         }
     }
 
     @EventHandler
     public void onPlayerRespawn(PlayerRespawnEvent event) {
+        Deathpoints dp = GravesPlugin.getInstance().getDeathpoints();
         String playerName = event.getPlayer().getName();
         if (null != dp.getLast(playerName) && null != Objects.requireNonNull(dp.getLast(playerName)).getItemsToKeep()) {
             ItemStack[] items = Objects.requireNonNull(dp.getLast(event.getPlayer().getName())).getItemsToKeep();

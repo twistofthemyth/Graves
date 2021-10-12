@@ -4,7 +4,16 @@ version: 0.06
 api-version: 1.17
 author: ha0s
 depend: [WorldGuard]
+
+commands:
+  graves:
+    description: Get info about graves position
+    usage: /<command>
+
 permissions:
   graves.keepinventory:
    description: Keep inventory save after death
    default: false
+  graves.list.other:
+    description: Get info about other players deaths
+    default: false
