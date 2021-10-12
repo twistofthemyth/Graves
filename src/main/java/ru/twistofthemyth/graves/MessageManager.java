@@ -1,5 +1,6 @@
 package ru.twistofthemyth.graves;
 
+import org.bukkit.ChatColor;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -26,6 +27,6 @@ public class MessageManager {
     @NotNull
     public String get(String name) {
         String message = locale.getString(name);
-        return message == null ? "" : message;
+        return message == null ? "" : ChatColor.AQUA + "[Graves] " + message;
     }
 }

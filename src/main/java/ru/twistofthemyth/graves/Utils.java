@@ -78,7 +78,6 @@ public class Utils {
                 counter++;
             }
         }
-        Logger.getAnonymousLogger().info("COUNTER: " + counter + "; Blocks: " + blocks.length);
         return !(counter == blocks.length);
     }
 

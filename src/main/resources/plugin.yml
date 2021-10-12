@@ -1,6 +1,10 @@
 main: ru.twistofthemyth.graves.GravesPlugin
 name: Graves
-version: 0.05
+version: 0.06
 api-version: 1.17
 author: ha0s
 depend: [WorldGuard]
+permissions:
+  graves.keepinventory:
+   description: Keep inventory save after death
+   default: false

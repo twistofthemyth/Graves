@@ -1,5 +1,6 @@
 package ru.twistofthemyth.graves;
 
+import net.kyori.adventure.util.TriState;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -19,9 +20,13 @@ public class DeathListener implements Listener {
         event.setCancelled(true);
         Player player = event.getEntity();
         ItemStack[] items = player.getInventory().getContents();
-        boolean keepInventory = event.getKeepInventory();
+        boolean keepInventory = TriState.TRUE.equals(player.permissionValue("graves.keepinventory"));
+        log.info(String.valueOf(keepInventory));
         try {
-            new Grave(player).place();
+            if (!keepInventory) {
+                log.info("placing grave");
+                new Grave(player).place();
+            }
         } catch (GravePlacementException exc) {
             log.info("Getting items back to " + player.getName());
             keepInventory = true;
@@ -29,6 +34,7 @@ public class DeathListener implements Listener {
             log.warning(exc.getMessage() + "\n" + Arrays.toString(exc.getStackTrace()));
         } finally {
             if (keepInventory) {
+                player.sendMessage(GravesPlugin.getInstance().msgManager().get("return_items"));
                 GravesPlugin.getInstance().getItemSaver().save(player.getName(), (items));
             }
             event.getEntity().getInventory().clear();

@@ -58,13 +58,7 @@ public class Grave {
     }
 
     public void place() throws GravePlacementException {
-        try {
-            findPlace();
-        } catch (GravePlacementException exc) {
-            player.sendMessage(msg.get("return_items"));
-            throw exc;
-        }
-
+        findPlace();
         List<ItemStack> items = Stream.of(player.getInventory().getContents()).filter(Objects::nonNull).collect(Collectors.toList());
 
         items.add(new ItemStack(rightChest.getType()));
